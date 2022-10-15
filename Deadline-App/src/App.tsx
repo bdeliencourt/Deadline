@@ -5,11 +5,13 @@ import './css/App.css';
 import './css/animation.css';
 import Dashboard from './views/Dashboard';
 import Welcome from './views/Welcome';
+import Menu from './components/Menu';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Container fluid className="App">
+        <Menu/>
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/dashboard" element={<Dashboard />} />

@@ -1,0 +1,36 @@
+.profileContainer{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1vh;
+    margin-bottom: 5vh;
+}
+
+.imageProfile{
+    padding:0;
+    width: 30vw;
+    height: 30vw;
+    max-height: 200px;
+    max-width: 200px;
+    border-radius: 100%;
+    object-fit: cover;
+    border: 4px solid white;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.1));
+  }
+
+.inputProfile{
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: inherit;
+    text-align: center;
+  }
+
+  .inputProfile:disabled{
+    background-color: transparent;
+    color: grey;
+  }
+  
+  

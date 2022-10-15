@@ -1,0 +1,12 @@
+.dashboard
+  {
+    background-color:  #fdfdfd;
+    border: 1px solid #efefef;
+    border-radius: 5px;
+    color: black;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 90vh;    
+}
