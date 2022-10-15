@@ -1,0 +1,19 @@
+.formContainer {
+  padding: 3vh;
+  border-radius: 2%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.formQuestionContainer {
+  padding-top: 2vh;
+}
+
+.formUserActionButton {
+  text-transform: uppercase;
+}
+
+.formLink {
+  background: none;
+  border: none;
+}
