@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Nav, Navbar, Offcanvas } from 'react-bootstrap';
+import "../css/menu.css";
 import { Link } from 'react-router-dom';
 
 const Menu: React.FC = () => {
@@ -17,7 +18,29 @@ const Menu: React.FC = () => {
             </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            
+            <div className="subMenuOffCanvas">
+              <small>
+                <strong>Navigation</strong>
+              </small>
+              <Nav className="subMenuOffCanvasLinks">
+                <Link className="navLink" to="/dashboard">
+                  Dashboard
+                </Link>
+              </Nav>
+            </div>
+            <div className="subMenuOffCanvas">
+              <small>
+                <strong>Account</strong>
+              </small>
+              <Nav className="subMenuOffCanvasLinks">
+                <Link className="navLink" to="/dashboard">
+                  Log-out
+                </Link>
+                <Link className="navLink" to="/dashboard">
+                  Delete your account
+                </Link>
+              </Nav>
+            </div>
           </Offcanvas.Body>
         </Navbar.Offcanvas>
         <Navbar.Brand className="brandMenu lightBrand" href="/dashboard">
@@ -25,8 +48,7 @@ const Menu: React.FC = () => {
         </Navbar.Brand>
         <Nav>
           <Nav.Link>
-            <Link className="navLink" to="/edit-profile">
-            </Link>
+            <Link className="navLink" to="/edit-profile"></Link>
           </Nav.Link>
         </Nav>
       </Container>

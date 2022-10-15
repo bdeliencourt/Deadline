@@ -1,0 +1,32 @@
+@font-face {
+    font-family: OAF;
+    src: url("../assets/font/OAF.otf") format("opentype");
+}
+
+.subMenuOffCanvas{
+    margin-bottom: 5vh;
+}
+
+.subMenuOffCanvasLinks{
+    padding-left: 1vh;
+}
+
+.darkBrand{
+    color: black;
+}
+
+.lightBrand{
+    color: white;
+}
+
+.lightBrand:hover{
+    color: white;
+}
+
+.brandMenu
+{
+    font-family: OAF;
+    font-size: 25px;
+    padding: 0;
+
+}
