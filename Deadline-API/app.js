@@ -6,7 +6,6 @@ const MongoStore = require('connect-mongo');
 const authRoute = require('./routes/auth.js');
 const cors = require('cors');
 const passport = require('passport');
-const localStrategy = require('passport-local');
 const User = require('./models/User.js');
 const postRoute = require("./routes/auth.js");
 const session = require('express-session');
@@ -14,8 +13,6 @@ const session = require('express-session');
 
 // Read .env file
 require('dotenv/config');
-
-
 
 // parse application/x-www-form-urlencoded
 var jsonParser = express.json({
@@ -26,7 +23,7 @@ var jsonParser = express.json({
 var urlencodedParser = express.urlencoded({
   extended: true,
   type: 'application/x-www-form-urlencoded'
-});
+})
 
 // Fix Access Control Allow Credentials
 const corsOptions = {
@@ -38,9 +35,11 @@ const corsOptions = {
 // Middlewares
 // Force credentials
 app.use(cors(corsOptions));
+
 // Allow JSON request
 app.use(jsonParser);
 app.use(urlencodedParser);
+
 // Passport configuration
 app.use(session({
     secret: process.env.COOKIE_SECRET,

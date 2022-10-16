@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 // Register route
-exports.register = async (req, res) => {
+exports.register = (req, res) => {
   // Passport is waiting for username and password key-value
   // We skip req body checks, because all inputs are required in the form
     User.register(
