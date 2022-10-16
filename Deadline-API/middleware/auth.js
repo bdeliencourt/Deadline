@@ -18,7 +18,6 @@ module.exports = () => {
 // Retreive user in DB and check token validity 
 const JWTStrategy = require("passport-jwt").Strategy;
 passport.use(new JWTStrategy(opts, function (jwt_payload, done) {
-    console.log("jwt payload", jwt_payload, "data now", Date.now());
     User.findOne({ _id: jwt_payload.userId }, function (err, user) {
         if (err) {
             return done(new Error("UserNotFound"), null);
@@ -37,7 +36,6 @@ const LocalStrategy = require('passport-local').Strategy;
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
 };
 
 

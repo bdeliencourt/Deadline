@@ -9,12 +9,21 @@ require('dotenv/config');
 
 // Token protected routes
 router.post("/update-profile",passport.authenticate('jwt'), authController.updateProfile);
+router.get("/get-profile", passport.authenticate('jwt'), authController.getProfile);
+router.delete("/delete-account", passport.authenticate('jwt'), authController.deleteAccount);
 
 // Session based routes
 router.post("/login",passport.authenticate('local'), authController.login);
-router.get("/logout",passport.authenticate('local'), authController.logout);
+router.get("/logout", authController.logout);
+router.get("/get-user", authController.getUser);
+
 
 // Public routes
 router.post("/register", authController.register);
+
+
+
+
+
 
 module.exports = router;

@@ -48,28 +48,29 @@ exports.login = (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
-      // Save token value in mongodb user session to make it permanent 
-      req.session.passport.token = token;
-      req.session.save();
-      res.status(200).json({
+
+      res.status(200).send({
         success: true,
         header: "GET login",
-        result: token
+        result: {token : token}
       });
 };
 
 // Log out route
 exports.logout = (req, res) => {
-  req.logout((err, data) => {
-    if (err) { 
-      res.json({success: false, header : "GET logout", result: err});
-    }
-    res.json({success: true, header : "GET logout", result: data});
-  });
+  if(req.isAuthenticated())
+  {
+    req.logout((err, data) => {
+      if (err) { 
+        res.json({success: false, header : "GET logout", result: err});
+      }
+      res.json({success: true, header : "GET logout", result: data});
+    });
+  } 
 }
 
+// Update profile
 exports.updateProfile = (req, res) => {
-
   // Update user fields : address and email
   User.updateOne({_id : req.user._id},
     {
@@ -79,6 +80,41 @@ exports.updateProfile = (req, res) => {
     }
     })
     .then((user) => res.status(200).json({ success: true, header : "POST update profile", result: user}))
-    .catch((error => res.status(200).json({ success: false, header : "POST update profile", result: error})));
+    .catch((error => res.status(500).json({ success: false, header : "POST update profile", result: error})));
 };
 
+// Get user profile
+exports.getProfile = (req, res) => {
+  User.findOne({_id : req.user._id})
+  .then((user) => res.status(200).json({ success: true, header : "GET Profil", result: user}))
+  .catch((error) => res.status(500).json({ success: false, header : "GET Profile", result: error}));
+
+}
+
+
+// Get user token : unlock routes
+exports.getUser = (req, res) => {
+  if(req.isAuthenticated())
+  {
+    const token = jwt.sign(
+      {
+        userId: req.user._id.toString(),
+        username: req.user.username
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.status(200).json({ success: true, header : "GET User", result: {token : token}});
+  }
+  else
+  {
+    res.status(500).json({ success: false, header : "GET User"});
+
+  }
+}
+
+exports.deleteAccount = (req, res) => {
+  User.deleteOne({_id : req.user._id.toString()})
+  .then((success) => res.status(200).json({ success: true, header : "Delete Account", result: success}))
+  .catch((error) => res.status(500).json({ success: false, header : "Delete Account", result: error}));
+}
