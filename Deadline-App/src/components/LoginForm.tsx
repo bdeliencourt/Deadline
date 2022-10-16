@@ -9,6 +9,9 @@ import UserContext from '../contexts/UserContext';
 const LoginForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => {
 
   const { setUserToken} = useContext(UserContext);
+  
+  const [loginState, setLoginState] = useState<string>("default");
+
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>('');
   const updateSetUsername = (e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value);
@@ -20,6 +23,8 @@ const LoginForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => {
 
   const handleUserLogin = (e: React.FormEvent<HTMLFormElement>) => {
 
+    setErrorMessage("");
+    setLoginState("pending");
     e.preventDefault();
     // Request axios
     axios(`${process.env.REACT_APP_SERVER_IP}/login`, {
@@ -37,7 +42,6 @@ const LoginForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => {
     })
     .then((response) => {
       // On success display login form
-      console.log(response.data.result["token"]);
       setUserToken && setUserToken(response.data.result["token"]);
       navigate("/dashboard");
     })
@@ -66,9 +70,12 @@ const LoginForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => {
         </Form.Group>
 
         <div className="d-grid gap-2">
-          <Button variant="primary" type="submit" className="formUserActionButton">
+          {(loginState === "default" || errorMessage) && <Button variant="primary" type="submit" className="formUserActionButton">
             Sign up
-          </Button>
+          </Button>}
+          {loginState === "pending" && !errorMessage && <Button variant="primary" type="submit" disabled className="formUserActionButton">
+             <span className="spinner-border"></span>
+          </Button>}
 
           {errorMessage && <div className = "text-danger">{errorMessage}</div>}
 

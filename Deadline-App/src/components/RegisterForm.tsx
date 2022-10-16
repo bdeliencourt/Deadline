@@ -5,6 +5,9 @@ import '../css/userconnection.css';
 import axios from 'axios';
 
 const RegisterForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => {
+
+  const [registerState, setRegisterState] = useState<string>("default");
+
   const [username, setUsername] = useState<string>('');
   const updateSetUsername = (e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value);
 
@@ -27,10 +30,12 @@ const RegisterForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => 
   const [phone, setPhone] = useState<string>('');
   const updateSetPhone = (e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value);
 
-
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const performRegister = (e: React.FormEvent<HTMLFormElement>) => {
+
+    setErrorMessage("");
+    setRegisterState("pending");
     e.preventDefault();
     // Request axios
     axios(`${process.env.REACT_APP_SERVER_IP}/register`, {
@@ -142,7 +147,7 @@ const RegisterForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => 
         </Form.Group>
 
         <div className="d-grid gap-2">
-          <Button
+          {(registerState === "default" || errorMessage) && <Button
             variant="primary"
             type="submit"
             className="formUserActionButton"
@@ -151,6 +156,12 @@ const RegisterForm: React.FC<UserActionProps> = ({ handleChangeUserAction }) => 
             }>
             Sign in
           </Button>
+          }
+
+          {registerState === "pending" && !errorMessage && <Button variant="primary" type="submit" disabled className="formUserActionButton">
+             <span className="spinner-border"></span>
+          </Button>}
+
 
           {errorMessage && <div className="text-danger">{errorMessage}</div>}
 

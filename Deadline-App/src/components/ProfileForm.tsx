@@ -1,84 +1,85 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import '../css/profileform.css';
-import {UserProfile} from "../interfaces/interfaces"
+import { UserProfile } from '../interfaces/interfaces';
 import UserContext from '../contexts/UserContext';
 import axios from 'axios';
 import { redirect, useNavigate } from 'react-router-dom';
 
 const ProfileForm: React.FC = () => {
-
-
   const navigate = useNavigate();
-  const {userToken} = useContext(UserContext);
+  const { userToken } = useContext(UserContext);
 
   // Store response from query
   const [userProfile, setUserProfile] = useState<UserProfile>({});
 
+  // update state to update send button
+  const [updateState, setUpdateState] = useState<string>('default');
+
   // Hook for mail
-  const [email, setEmail] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
   const [emailUpdated, setEmailUpdated] = useState<boolean>(false);
   const handleEmailUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setEmailUpdated(e.target.value !== userProfile["email"]);
+    setEmailUpdated(e.target.value !== userProfile['email']);
   };
 
   // Hook for address
-  const [address, setAddress] = useState<string>("");
+  const [address, setAddress] = useState<string>('');
   const [addressUpdated, setAddressUpdated] = useState<boolean>(false);
 
-  const handleAddressUpdate = (e: React.ChangeEvent<HTMLInputElement>) =>
-  {
+  const handleAddressUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(e.target.value);
-    setAddressUpdated(e.target.value !== userProfile["address"]);
+    setAddressUpdated(e.target.value !== userProfile['address']);
   };
 
   // Retrieve user infos on amount
   useEffect(() => {
-
     axios(`${process.env.REACT_APP_SERVER_IP}/get-profile`, {
-      method: "get",
+      method: 'get',
       headers: {
-        Accept: "application/json",
-        "Content-type": "application/json",
-        "Access-Control-Allow-Credentials": true,
-        "Authorization" : `Bearer ${userToken}`
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Credentials': true,
+        Authorization: `Bearer ${userToken}`
       },
       withCredentials: true
     })
-    .then((response) => {
-      // Load profile into component
-      setUserProfile({...response.data.result});
-      setEmail(response.data.result["email"]);
-      setAddress(response.data.result["address"]);
-      redirect("/dashboard");
-    })
-    .catch((error) => {});
+      .then((response) => {
+        // Load profile into component
+        setUserProfile({ ...response.data.result });
+        setEmail(response.data.result['email']);
+        setAddress(response.data.result['address']);
+        redirect('/dashboard');
+      })
+      .catch((error) => {});
   }, [userToken]);
 
-
   const handleUpdateProfile = () => {
-    
+    setUpdateState('pending');
     axios(`${process.env.REACT_APP_SERVER_IP}/update-profile`, {
-      method: "post",
-      data:{
+      method: 'post',
+      data: {
         email: email,
         address: address
       },
       headers: {
-        Accept: "application/json",
-        "Content-type": "application/json",
-        "Access-Control-Allow-Credentials": true,
-        "Authorization" : `Bearer ${userToken}`
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+        'Access-Control-Allow-Credentials': true,
+        Authorization: `Bearer ${userToken}`
       },
       withCredentials: true
     })
-    .then((response) => {
-      // On success refresh the page
-      navigate(0);
-    })
-    .catch((error) => {console.log(error)});
-
+      .then((response) => {
+        // On success refresh the page
+        setUpdateState('success');
+        navigate(0);
+      })
+      .catch((error) => {
+        setUpdateState('error');
+        console.log(error);
+      });
   };
 
   return (
@@ -90,14 +91,15 @@ const ProfileForm: React.FC = () => {
           <Col>
             <img
               className="imageProfile"
-              src={require("../assets/images/background.png")} alt="Avatar"
+              src={require('../assets/images/background.png')}
+              alt="Avatar"
             />
           </Col>
         </Row>
 
         {/* Display name */}
         <Row className="display-5">
-          <strong>{userProfile["username"]}</strong>
+          <strong>{userProfile['username']}</strong>
         </Row>
         {/* Display firstname */}
         <Row>
@@ -109,7 +111,7 @@ const ProfileForm: React.FC = () => {
             className="inputProfile"
             placeholder="Firstname"
             disabled
-            value={userProfile["firstname"]}
+            value={userProfile['firstname']}
           />
         </Row>
         {/* Display lastname */}
@@ -121,7 +123,7 @@ const ProfileForm: React.FC = () => {
             type="text"
             className="inputProfile"
             placeholder="Lastname"
-            value={userProfile["lastname"]}
+            value={userProfile['lastname']}
             disabled
           />
         </Row>
@@ -131,7 +133,7 @@ const ProfileForm: React.FC = () => {
             <strong>Email</strong>
           </small>
           <Form.Control
-            type="text"
+            type="email"
             className="inputProfile"
             placeholder="Email"
             value={email}
@@ -157,19 +159,48 @@ const ProfileForm: React.FC = () => {
             <strong>Phone number</strong>
           </small>
           <Form.Control
-            type="text"
+            type="tel"
             className="inputProfile"
             placeholder="Phone"
             disabled
-            value={userProfile["phone"]}
+            value={userProfile['phone']}
           />
         </Row>
+        
       </Row>
       <Row>
         <div className="d-grid gap-2">
           {/* Unlock save button only if email or address changed from initial value */}
-          <Button variant="outline-primary" disabled={!addressUpdated && !emailUpdated} 
-          onClick={() => handleUpdateProfile()}>Save changes</Button>
+          {updateState === 'default' && (
+            <Button
+              variant="outline-primary"
+              disabled={!addressUpdated && !emailUpdated}
+              onClick={() => handleUpdateProfile()}>
+              Save changes
+            </Button>
+          )}
+
+          {updateState === 'pending' && (
+            <Button variant="primary" disabled>
+              <span className="spinner-border"></span>
+            </Button>
+          )}
+
+          {updateState === 'error' && (
+            <Button
+              variant="danger"
+              disabled={!addressUpdated && !emailUpdated}
+              onClick={() => handleUpdateProfile()}>
+              Click to retry
+            </Button>
+          )}
+
+          {updateState === 'success' && (
+            <Button variant="success" disabled>
+              Changes saved
+            </Button>
+          )}
+          
         </div>
       </Row>
     </Container>
