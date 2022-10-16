@@ -3,6 +3,16 @@
     src: url("../assets/font/OAF.otf") format("opentype");
 }
 
+.navLink{
+    color: grey;
+    text-decoration: none;
+    padding-left: 2vw;
+}
+
+.navLink:hover, .navLink:active{
+    color: red;
+}
+
 .subMenuOffCanvas{
     margin-bottom: 5vh;
 }

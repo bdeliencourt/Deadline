@@ -1,9 +1,85 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import '../css/profileform.css';
+import {UserProfile} from "../interfaces/interfaces"
+import UserContext from '../contexts/UserContext';
+import axios from 'axios';
+import { redirect, useNavigate } from 'react-router-dom';
+
 const ProfileForm: React.FC = () => {
-  const [email, setEmail] = useState<string>('email');
-  const handleEmailUpdate = (e: React.ChangeEvent<HTMLInputElement>) => true;
+
+
+  const navigate = useNavigate();
+  const {userToken} = useContext(UserContext);
+
+  // Store response from query
+  const [userProfile, setUserProfile] = useState<UserProfile>({});
+
+  // Hook for mail
+  const [email, setEmail] = useState<string>("");
+  const [emailUpdated, setEmailUpdated] = useState<boolean>(false);
+  const handleEmailUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setEmailUpdated(e.target.value !== userProfile["email"]);
+  };
+
+  // Hook for address
+  const [address, setAddress] = useState<string>("");
+  const [addressUpdated, setAddressUpdated] = useState<boolean>(false);
+
+  const handleAddressUpdate = (e: React.ChangeEvent<HTMLInputElement>) =>
+  {
+    setAddress(e.target.value);
+    setAddressUpdated(e.target.value !== userProfile["address"]);
+  };
+
+  // Retrieve user infos on amount
+  useEffect(() => {
+
+    axios(`${process.env.REACT_APP_SERVER_IP}/get-profile`, {
+      method: "get",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        "Access-Control-Allow-Credentials": true,
+        "Authorization" : `Bearer ${userToken}`
+      },
+      withCredentials: true
+    })
+    .then((response) => {
+      // Load profile into component
+      setUserProfile({...response.data.result});
+      setEmail(response.data.result["email"]);
+      setAddress(response.data.result["address"]);
+      redirect("/dashboard");
+    })
+    .catch((error) => {});
+  }, [userToken]);
+
+
+  const handleUpdateProfile = () => {
+    
+    axios(`${process.env.REACT_APP_SERVER_IP}/update-profile`, {
+      method: "post",
+      data:{
+        email: email,
+        address: address
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json",
+        "Access-Control-Allow-Credentials": true,
+        "Authorization" : `Bearer ${userToken}`
+      },
+      withCredentials: true
+    })
+    .then((response) => {
+      // On success refresh the page
+      navigate(0);
+    })
+    .catch((error) => {console.log(error)});
+
+  };
 
   return (
     <Container fluid>
@@ -14,14 +90,14 @@ const ProfileForm: React.FC = () => {
           <Col>
             <img
               className="imageProfile"
-              src="https://ui-avatars.com/api/?name=John+Doe?size=512"
+              src={require("../assets/images/background.png")} alt="Avatar"
             />
           </Col>
         </Row>
 
         {/* Display name */}
         <Row className="display-5">
-          <strong>DELIENCOURT</strong>
+          <strong>{userProfile["username"]}</strong>
         </Row>
         {/* Display firstname */}
         <Row>
@@ -31,10 +107,9 @@ const ProfileForm: React.FC = () => {
           <Form.Control
             type="text"
             className="inputProfile"
-            placeholder="My boulder"
+            placeholder="Firstname"
             disabled
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEmailUpdate(e)}
+            value={userProfile["firstname"]}
           />
         </Row>
         {/* Display lastname */}
@@ -45,10 +120,9 @@ const ProfileForm: React.FC = () => {
           <Form.Control
             type="text"
             className="inputProfile"
-            placeholder="My boulder"
-            value={email}
+            placeholder="Lastname"
+            value={userProfile["lastname"]}
             disabled
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEmailUpdate(e)}
           />
         </Row>
         {/* Display email */}
@@ -59,7 +133,7 @@ const ProfileForm: React.FC = () => {
           <Form.Control
             type="text"
             className="inputProfile"
-            placeholder="My boulder"
+            placeholder="Email"
             value={email}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEmailUpdate(e)}
           />
@@ -72,9 +146,9 @@ const ProfileForm: React.FC = () => {
           <Form.Control
             type="text"
             className="inputProfile"
-            placeholder="My boulder"
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEmailUpdate(e)}
+            placeholder="Address"
+            value={address}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleAddressUpdate(e)}
           />
         </Row>
         {/* Display phone number */}
@@ -85,16 +159,17 @@ const ProfileForm: React.FC = () => {
           <Form.Control
             type="text"
             className="inputProfile"
-            placeholder="My boulder"
+            placeholder="Phone"
             disabled
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleEmailUpdate(e)}
+            value={userProfile["phone"]}
           />
         </Row>
       </Row>
       <Row>
         <div className="d-grid gap-2">
-          <Button variant="outline-primary disabled">Save changes</Button>
+          {/* Unlock save button only if email or address changed from initial value */}
+          <Button variant="outline-primary" disabled={!addressUpdated && !emailUpdated} 
+          onClick={() => handleUpdateProfile()}>Save changes</Button>
         </div>
       </Row>
     </Container>
